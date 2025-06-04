@@ -17,7 +17,11 @@ export default new DataSource({
   password: configService.get('DB_PASSWORD'),
   database: configService.get('DB_DATABASE'),
   entities: [User, Wallet, Transaction],
-  migrations: ['src/migrations/*.ts'],
+  migrations: [
+    configService.get('NODE_ENV') === 'production'
+      ? 'dist/migrations/*.js'
+      : 'src/migrations/*.ts',
+  ],
   migrationsTableName: 'migrations',
   synchronize: false,
 });
