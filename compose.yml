@@ -9,6 +9,57 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - wallet-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: wallet_app
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: docker
+      DB_PASSWORD: docker
+      DB_DATABASE: wallet_finance_db
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      NODE_ENV: production
+      PORT: 3000
+      NODE_OPTIONS: '--max-old-space-size=1024'
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pm2", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - wallet-network
+
+networks:
+  wallet-network:
+    driver: bridge
 
 volumes:
   db_data:
