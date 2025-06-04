@@ -188,4 +188,27 @@ export class AuthController {
       },
     };
   }
+
+  @Get('health')
+  @ApiOperation({
+    summary: 'Health check da aplicação',
+    description:
+      'Endpoint para verificar se a aplicação está funcionando corretamente',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Aplicação funcionando normalmente',
+    example: {
+      status: 'ok',
+      timestamp: '2025-06-04T19:30:00.000Z',
+      uptime: 12345,
+    },
+  })
+  getHealth() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    };
+  }
 }

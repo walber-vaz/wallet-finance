@@ -18,5 +18,5 @@ export const databaseConfig = (
   migrations: ['dist/migrations/*.js'],
   migrationsRun: true,
   migrationsTableName: 'migrations',
-  logging: true,
+  logging: configService.get('NODE_ENV') !== 'production',
 });
