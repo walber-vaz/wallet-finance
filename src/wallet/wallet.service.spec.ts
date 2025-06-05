@@ -9,8 +9,6 @@ import {
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 
-jest.mock('typeorm');
-
 const mockWallet = {
   id: randomUUID(),
   balance: 1000,
@@ -192,7 +190,7 @@ describe('WalletService Tests', () => {
         amount: 100,
         previousBalance: 1000,
         newBalance: 1100,
-        description: 'Depósito',
+        description: 'Depósito na carteira',
         createdAt: mockTransaction.createdAt,
       });
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
