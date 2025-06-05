@@ -38,31 +38,25 @@ PM2 é um gerenciador de processos para Node.js que facilita a execução e moni
 
 ### Passos
 
-1. Clone o repositório:
-
-   ```bash
-   git clone https://github.com/walber-vaz/wallet-finance.git
-   ```
-
-2. Navegue até o diretório do projeto:
+1. Navegue até o diretório do projeto:
 
    ```bash
    cd wallet-finance
    ```
 
-3. Copie o arquivo `.env.example` para `.env` e configure as variáveis de ambiente conforme necessário.
-4. Inicie os containers do Docker:
+2. Copie o arquivo `.env.example` para `.env` e configure as variáveis de ambiente conforme necessário.
+3. Inicie os containers do Docker:
 
    ```bash
    docker compose up -d --build
    ```
 
-5. Acesse com seu navegador ou ferramenta de API preferida:
+4. Acesse com seu navegador ou ferramenta de API preferida:
 
    - **Swagger**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
    - **Aplicação**: [http://localhost:3000](http://localhost:3000)
 
-6. Para parar os containers, execute:
+5. Para parar os containers, execute:
 
    ```bash
    docker compose down
