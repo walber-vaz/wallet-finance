@@ -82,7 +82,7 @@ describe('WalletService Tests', () => {
     );
   });
 
-  describe('getWalletByUserId', () => {
+  describe('Test getWalletByUserId', () => {
     it('should return wallet info if found', async () => {
       mockWalletRepository.findOne.mockResolvedValue({ ...mockWallet });
       const result = await service.getWalletByUserId(mockWallet.userId);
@@ -104,7 +104,7 @@ describe('WalletService Tests', () => {
     });
   });
 
-  describe('getBalance', () => {
+  describe('Test getBalance', () => {
     it('should return balance if wallet found', async () => {
       mockWalletRepository.findOne.mockResolvedValue({ balance: 500 });
       const result = await service.getBalance(mockWallet.userId);
@@ -119,7 +119,7 @@ describe('WalletService Tests', () => {
     });
   });
 
-  describe('getWalletStats', () => {
+  describe('Test getWalletStats', () => {
     it('should return wallet stats', async () => {
       mockWalletRepository.findOne.mockResolvedValue({ balance: 1000 });
       mockTransactionRepository.createQueryBuilder.mockReturnValue(
@@ -174,14 +174,14 @@ describe('WalletService Tests', () => {
     });
   });
 
-  describe('addBalance', () => {
+  describe('Test addBalance', () => {
     it('should add balance and return operation response', async () => {
       mockQueryRunner.manager.findOne.mockResolvedValue({ balance: 1000 });
       mockQueryRunner.manager.create.mockReturnValue(mockTransaction);
       mockQueryRunner.manager.save.mockResolvedValue(mockTransaction);
       mockQueryRunner.manager.update.mockResolvedValue(undefined);
 
-      const dto = { amount: 100, description: 'Depósito' };
+      const dto = { amount: 100, description: 'Depósito na carteira' };
       const result = await service.addBalance(mockWallet.userId, dto);
 
       expect(result).toMatchObject({
@@ -199,7 +199,7 @@ describe('WalletService Tests', () => {
 
     it('should throw NotFoundException if wallet not found', async () => {
       mockQueryRunner.manager.findOne.mockResolvedValue(null);
-      const dto = { amount: 100, description: 'Depósito' };
+      const dto = { amount: 100, description: 'Depósito na carteira' };
       await expect(service.addBalance(mockWallet.userId, dto)).rejects.toThrow(
         NotFoundException,
       );
@@ -209,7 +209,7 @@ describe('WalletService Tests', () => {
 
     it('should rollback transaction on error', async () => {
       mockQueryRunner.manager.findOne.mockRejectedValue(new Error('DB error'));
-      const dto = { amount: 100, description: 'Depósito' };
+      const dto = { amount: 100, description: 'Depósito na carteira' };
       await expect(service.addBalance(mockWallet.userId, dto)).rejects.toThrow(
         'DB error',
       );
@@ -218,22 +218,22 @@ describe('WalletService Tests', () => {
     });
   });
 
-  describe('withdrawBalance', () => {
+  describe('Test withdrawBalance', () => {
     it('should withdraw balance and return operation response', async () => {
       mockQueryRunner.manager.findOne.mockResolvedValue({ balance: 1000 });
       mockQueryRunner.manager.create.mockReturnValue({
         ...mockTransaction,
         type: TransactionType.WITHDRAWAL,
-        description: 'Saque',
+        description: 'Saque na carteira',
       });
       mockQueryRunner.manager.save.mockResolvedValue({
         ...mockTransaction,
         type: TransactionType.WITHDRAWAL,
-        description: 'Saque',
+        description: 'Saque na carteira',
       });
       mockQueryRunner.manager.update.mockResolvedValue(undefined);
 
-      const dto = { amount: 200, description: 'Saque' };
+      const dto = { amount: 200, description: 'Saque na carteira' };
       const result = await service.withdrawBalance(mockWallet.userId, dto);
 
       expect(result).toMatchObject({
@@ -242,7 +242,7 @@ describe('WalletService Tests', () => {
         amount: 200,
         previousBalance: 1000,
         newBalance: 800,
-        description: 'Saque',
+        description: 'Saque na carteira',
         createdAt: mockTransaction.createdAt,
       });
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
@@ -251,7 +251,7 @@ describe('WalletService Tests', () => {
 
     it('should throw NotFoundException if wallet not found', async () => {
       mockQueryRunner.manager.findOne.mockResolvedValue(null);
-      const dto = { amount: 100, description: 'Saque' };
+      const dto = { amount: 100, description: 'Saque na carteira' };
       await expect(
         service.withdrawBalance(mockWallet.userId, dto),
       ).rejects.toThrow(NotFoundException);
@@ -261,7 +261,7 @@ describe('WalletService Tests', () => {
 
     it('should throw BadRequestException if insufficient balance', async () => {
       mockQueryRunner.manager.findOne.mockResolvedValue({ balance: 50 });
-      const dto = { amount: 100, description: 'Saque' };
+      const dto = { amount: 100, description: 'Saque na carteira' };
       await expect(
         service.withdrawBalance(mockWallet.userId, dto),
       ).rejects.toThrow(BadRequestException);
@@ -271,7 +271,7 @@ describe('WalletService Tests', () => {
 
     it('should rollback transaction on error', async () => {
       mockQueryRunner.manager.findOne.mockRejectedValue(new Error('DB error'));
-      const dto = { amount: 100, description: 'Saque' };
+      const dto = { amount: 100, description: 'Saque na carteira' };
       await expect(
         service.withdrawBalance(mockWallet.userId, dto),
       ).rejects.toThrow('DB error');
