@@ -70,7 +70,7 @@ const mockDataSource = {
   createQueryRunner: jest.fn(() => mockQueryRunner),
 };
 
-describe('WalletService Tests', () => {
+describe('WalletService - Unit Tests', () => {
   let service: WalletService;
 
   beforeEach(() => {
@@ -216,6 +216,24 @@ describe('WalletService Tests', () => {
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
     });
+
+    it('should use default description if none provided', async () => {
+      mockQueryRunner.manager.findOne.mockResolvedValue({ balance: 1000 });
+      mockQueryRunner.manager.create.mockReturnValue({
+        ...mockTransaction,
+        description: 'Depósito na carteira',
+      });
+      mockQueryRunner.manager.save.mockResolvedValue({
+        ...mockTransaction,
+        description: 'Depósito na carteira',
+      });
+      mockQueryRunner.manager.update.mockResolvedValue(undefined);
+
+      const dto = { amount: 100 };
+      const result = await service.addBalance(mockWallet.userId, dto);
+
+      expect(result.description).toBe('Depósito na carteira');
+    });
   });
 
   describe('Test withdrawBalance', () => {
@@ -277,6 +295,27 @@ describe('WalletService Tests', () => {
       ).rejects.toThrow('DB error');
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
+    });
+
+    // se não for fornecida uma descrição, deve usar a descrição padrão 'Saque da carteira'
+    it('should use default description if none provided', async () => {
+      mockQueryRunner.manager.findOne.mockResolvedValue({ balance: 1000 });
+      mockQueryRunner.manager.create.mockReturnValue({
+        ...mockTransaction,
+        type: TransactionType.WITHDRAWAL,
+        description: 'Saque na carteira',
+      });
+      mockQueryRunner.manager.save.mockResolvedValue({
+        ...mockTransaction,
+        type: TransactionType.WITHDRAWAL,
+        description: 'Saque na carteira',
+      });
+      mockQueryRunner.manager.update.mockResolvedValue(undefined);
+
+      const dto = { amount: 200 };
+      const result = await service.withdrawBalance(mockWallet.userId, dto);
+
+      expect(result.description).toBe('Saque na carteira');
     });
   });
 });
